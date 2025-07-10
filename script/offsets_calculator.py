@@ -1,3 +1,6 @@
+from HGCal_Module_Production_Toolkit.utils.center_finder import *
+from HGCal_Module_Production_Toolkit.utils.io_tool import get_offsets_raw_from_textfile, write_to_csv
+
 import yaml
 
 def ragular_all_numbers(obj):
@@ -47,29 +50,24 @@ def calculate_centor_offsets(modules:dict, textfile:str) -> dict:
 def calculate_angle_offsets(modules:dict, textfile:str) -> dict:
     pass
 
-
-
-
-
-
-def offsets_calculator(modules, txtfile):
+def offsets_calculator(modules:list, txtfile:str) -> dict:
 
     offsets = calculate_centor_offsets(modules, txtfile)
     offsets = ragular_all_numbers(offsets)
 
 #    calculate_angle_offsets()
 
-    write_to_csv(offsets, 'output.csv' )
+    return offsets
 
+if __name__ == '__main__':
 
-def __name__ == '__main__':
-
-    modules = {
+    modules = [
         "320MHF2WCNT0098-AT07-R",
         "320MHF2WCNT0099-AT07-L"
-        }
+        ]
 
 
     txtfile = 'M165M166.txt'
 
-    offsets_finder(modules, txtfile)
+    offsets = offsets_calculator(modules, txtfile)
+    write_to_csv(offsets, 'vvvv.csv' )

@@ -1,4 +1,5 @@
 import re
+import csv
 
 template = {
     "L" : {
@@ -50,7 +51,7 @@ def get_offsets_raw_from_textfile(filename:str) -> dict:
     return module_offsets_raw
 
 
-def write_to_csv(module_qc_dict: dict, outfile: str) -> None :
+def write_to_csv(module_qc_dict: dict, outfile: str, which:str ='all') -> None :
 
     module_list = []
 
