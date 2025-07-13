@@ -70,4 +70,7 @@ if __name__ == '__main__':
     txtfile = 'M165M166.txt'
 
     offsets = offsets_calculator(modules, txtfile)
+
+    print(offsets)
+
     write_to_csv(offsets, 'vvvv.csv' )
