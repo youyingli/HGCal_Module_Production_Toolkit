@@ -1,5 +1,6 @@
 import re
 import csv
+import copy
 
 template = {
     "L" : {
@@ -35,7 +36,7 @@ template = {
 
 def get_offsets_raw_from_textfile(filename:str) -> dict:
 
-    module_offsets_raw = template.copy()
+    module_offsets_raw = copy.deepcopy(template)
 
     with open(filename, 'r') as f:
 
@@ -76,7 +77,7 @@ def get_flatness_raw_from_textfile(filename:str) -> tuple:
 
     return x, y, z
 
-def write_to_csv(module_qc_dict: dict, outfile: str, which:str ='all') -> None :
+def write_to_csv(module_qc_dict: dict, outfile, which:str ='all') -> None :
 
     module_list = []
 
@@ -88,6 +89,14 @@ def write_to_csv(module_qc_dict: dict, outfile: str, which:str ='all') -> None :
             'pcb_center_offset_y',
             'sensor_angle_offset',
             'pcb_angle_offset',
+            "Vacuum_thickness",
+            "Vacuum_min_height",
+            "Vacuum_max_height",
+            "Vacuum_flatness",
+            "NoVacuum_thickness",
+            "NoVacuum_min_height",
+            "NoVacuum_max_height",
+            "NoVacuum_flatness",
         ]
 
     for module_name, module_qc in module_qc_dict.items():
@@ -99,7 +108,15 @@ def write_to_csv(module_qc_dict: dict, outfile: str, which:str ='all') -> None :
             fields[3] : module_qc['center_offsets']['pcb'][0],
             fields[4] : module_qc['center_offsets']['pcb'][1],
             fields[5] : module_qc['angle_offsets']['sensor'],
-            fields[6] : module_qc['angle_offsets']['pcb']
+            fields[6] : module_qc['angle_offsets']['pcb'],
+            fields[7] : module_qc['Vacuum']['thickness'],
+            fields[8] : module_qc['Vacuum']['min_height'],
+            fields[9] : module_qc['Vacuum']['max_height'],
+            fields[10] : module_qc['Vacuum']['flatness'],
+            fields[11] : module_qc['NoVacuum']['thickness'],
+            fields[12] : module_qc['NoVacuum']['min_height'],
+            fields[13] : module_qc['NoVacuum']['max_height'],
+            fields[14] : module_qc['NoVacuum']['flatness'],
             })
 
     with open(outfile, mode='w', newline='') as file:

@@ -2,7 +2,9 @@ from HGCal_Module_Production_Toolkit.utils.center_finder import *
 from HGCal_Module_Production_Toolkit.utils.d_vector_finder import *
 from HGCal_Module_Production_Toolkit.utils.io_tool import get_offsets_raw_from_textfile, write_to_csv
 
+import os
 import yaml
+os.environ['FRAMEWORK_PATH'] = './'
 
 def ragular_all_numbers(obj, factor=1):
     if isinstance(obj, dict):
@@ -27,10 +29,10 @@ def get_angle_from_two_vectors(v1:dict, v2:dict) -> float:
 
 def calculate_centor_offsets(modules:dict, offsets_raw:dict) -> dict:
 
-    with open("data/sensor.yaml", 'r') as sensor_correction_file:
+    with open(os.getenv('FRAMEWORK_PATH') + "/data/sensor.yaml", 'r') as sensor_correction_file:
         sensor_correction = yaml.safe_load(sensor_correction_file)
 
-    with open("data/tray.yaml", 'r') as baseplate_correction_file:
+    with open(os.getenv('FRAMEWORK_PATH') + "/data/tray.yaml", 'r') as baseplate_correction_file:
         baseplate_correction = yaml.safe_load(baseplate_correction_file)
 
     offsets = {}
@@ -59,7 +61,7 @@ def calculate_centor_offsets(modules:dict, offsets_raw:dict) -> dict:
 
 def calculate_angle_offsets(modules:dict, offsets_raw:dict) -> dict:
 
-    with open("data/sensor.yaml", 'r') as sensor_correction_file:
+    with open(os.getenv('FRAMEWORK_PATH') + "/data/sensor.yaml", 'r') as sensor_correction_file:
         sensor_correction = yaml.safe_load(sensor_correction_file)
 
     offsets = {}
@@ -79,6 +81,7 @@ def calculate_angle_offsets(modules:dict, offsets_raw:dict) -> dict:
         sensor_angle_offsets = get_angle_from_two_vectors(sensor_d_vector, baseplate_d_vector)
         pcb_angle_offsets    = get_angle_from_two_vectors(pcb_d_vector, baseplate_d_vector)
 
+        # Assign the angle rotation direction (counterclockwise : "+", clockwise : "-")
         if pcb_d_vector['d_vector_y'] < baseplate_d_vector['d_vector_y']:
             pcb_angle_offsets = -pcb_angle_offsets
         if sensor_d_vector['d_vector_y'] < baseplate_d_vector['d_vector_y']:
@@ -94,7 +97,7 @@ def calculate_angle_offsets(modules:dict, offsets_raw:dict) -> dict:
 
 def offsets_calculator(modules:list, textfile:str) -> dict:
 
-    module_offsets_raw = get_offsets_raw_from_textfile(textfile)
+    module_offsets_raw = get_offsets_raw_from_textfile(os.getenv('FRAMEWORK_PATH') + f'/input/{textfile}')
 
     offsets = calculate_centor_offsets(modules, module_offsets_raw)
     offsets = ragular_all_numbers(offsets, factor=1000)
@@ -121,4 +124,4 @@ if __name__ == '__main__':
 
     print(offsets)
 
-    write_to_csv(offsets, 'vvvv.csv' )
+    write_to_csv(offsets, 'test.csv' )
