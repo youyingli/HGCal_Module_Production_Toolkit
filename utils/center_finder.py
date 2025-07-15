@@ -1,5 +1,3 @@
-
-
 def list_average(coord_list:list) -> float:
     return sum(coord_list) / len(coord_list)
 

@@ -98,13 +98,18 @@ def flatness_calculator(module:str, textfile:str, isVacuum:bool = False) -> dict
     ref_plane_coeffs = None
     tray_side = None
     if re.search('AT0[0-9]-[LR]', module):
+
         module = module.split('-')
+        tray_type = module[1]
         tray_side = module[2][0]
+        module    = module[0]
 
-        x_ref, y_ref, z_ref = get_flatness_raw_from_textfile(os.getenv('FRAMEWORK_PATH') + f'/data/{module[1]}-{module[2]}.txt', tray_side)
+        x_ref, y_ref, z_ref = get_flatness_raw_from_textfile(os.getenv('FRAMEWORK_PATH') + f'/data/{tray_type}-{tray_side}.txt', tray_side)
+
+        if not isVacuum:
+            x_ref, y_ref, z_ref = get_flatness_raw_from_textfile(os.getenv('FRAMEWORK_PATH') + f'/data/AT00-{tray_side}.txt', tray_side)
+
         ref_plane_coeffs = ref_plane_finding(x_ref, y_ref, z_ref, np.ones( len(z_ref) ))
-
-        module = module[0]
 
     # Material surface height
     x_target, y_target, z_target = get_flatness_raw_from_textfile(os.getenv('FRAMEWORK_PATH') + f"/input/{textfile}", tray_side)
@@ -114,7 +119,7 @@ def flatness_calculator(module:str, textfile:str, isVacuum:bool = False) -> dict
 
     # Make plots
     make_flatness_plot(
-            module[0],
+            module,
             x_target,
             y_target,
             z_target,

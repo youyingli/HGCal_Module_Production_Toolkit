@@ -1,33 +1,12 @@
 import os
 os.environ['FRAMEWORK_PATH'] = './'
-os.environ['PYTHONPATH'] = '/home/youying/hgcal'
+os.environ['PYTHONPATH'] = ''
 print(os.getenv('PYTHONPATH') )
 from HGCal_Module_Production_Toolkit.scripts.offsets_calculator import offsets_calculator
 from HGCal_Module_Production_Toolkit.scripts.make_accuracy_plot import make_accuracy_plot
 from HGCal_Module_Production_Toolkit.scripts.flatness_calculator import flatness_calculator
 from HGCal_Module_Production_Toolkit.utils.io_tool import write_to_csv
-#{
-#    "320MHF2WCNT0096" : {
-#
-#        "center_offsets" : {
-#            "pcb" : [8, 9],
-#            "sensor" : [7, 8]
-#            },
-#
-#        "angle_offsets" : {
-#            "pcb" : 2,
-#            "sensor" : 3
-#            },
-#
-#        "flatness" : 33,
-#        "thickness" : 22,
-#        "Max_height" : 3,
-#        "Min_height" : 3
-#
-#    }
-#
-#
-#}
+
 
 def main(offsets_inputs:list, flatness_inputs:list, tag:str = 'NoTag') -> None:
 
@@ -54,9 +33,9 @@ def main(offsets_inputs:list, flatness_inputs:list, tag:str = 'NoTag') -> None:
                 ]
 
         make_accuracy_plot([offsets], os.getenv('FRAMEWORK_PATH') + '/out' )
-        offsets_list += offsets
+        offsets_list.append(offsets)
 
-    make_accuracy_plot([offsets_list], os.getenv('FRAMEWORK_PATH') + '/out')
+    make_accuracy_plot(offsets_list, os.getenv('FRAMEWORK_PATH') + '/out')
 
     # Flatness and thickness
     # ----------------------------------------------------------

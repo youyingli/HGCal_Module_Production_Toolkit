@@ -68,7 +68,7 @@ def get_flatness_raw_from_textfile(filename:str, tray_side:str) -> tuple:
 
         start = False
         for line in f.readlines():
-            if re.search(f'Step Name: Plane_AT03_{tray_side}_Module*', line) or re.search(f'Step Name: Plane_{tray_side}*', line):
+            if re.search(f'Step Name: Plane_AT0[0-9]_{tray_side}_[Mm]odule', line) or re.search(f'Feature Name: Plane_{tray_side}', line):
                 start = True
                 continue
 
@@ -87,11 +87,11 @@ def get_flatness_raw_from_textfile(filename:str, tray_side:str) -> tuple:
 
     return x, y, z
 
-def ragular_all_numbers(obj, factor=1):
+def ragular_all_numbers(obj, factor:float = 1.):
     if isinstance(obj, dict):
-        return {k: ragular_all_numbers(v) for k, v in obj.items()}
+        return {k: ragular_all_numbers(v, factor) for k, v in obj.items()}
     elif isinstance(obj, list):
-        return [ragular_all_numbers(v) for v in obj]
+        return [ragular_all_numbers(v, factor) for v in obj]
     elif isinstance(obj, (int, float)):
         return round(obj*factor, 4)
     else:

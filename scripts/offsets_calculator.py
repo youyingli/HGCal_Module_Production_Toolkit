@@ -4,7 +4,6 @@ from HGCal_Module_Production_Toolkit.utils.io_tool import get_offsets_raw_from_t
 
 import os
 import yaml
-os.environ['FRAMEWORK_PATH'] = './'
 
 def get_angle_from_two_vectors(v1:dict, v2:dict) -> float:
 
@@ -39,7 +38,6 @@ def calculate_centor_offsets(modules:dict, offsets_raw:dict) -> dict:
         pcb_centers       = globals()[f"{module_type}_pcb_center_finder"](offsets_raw, tray_side)
         sensor_centers    = globals()[f"{module_type}_sensor_center_finder"](offsets_raw, tray_side, sensor_correction[module_type])
         baseplate_centers = globals()[f"{module_type}_baseplate_center_finder"](offsets_raw, tray_side, baseplate_correction[tray_index])
-
 
         offsets[module] = {}
         offsets[module]["center_offsets"] = {
