@@ -1,6 +1,7 @@
 import re
 import csv
 import copy
+import numpy as np
 
 template = {
     "L" : {
@@ -57,25 +58,44 @@ def get_offsets_raw_from_textfile(filename:str) -> dict:
 
     return module_offsets_raw
 
-def get_flatness_raw_from_textfile(filename:str) -> tuple:
+def get_flatness_raw_from_textfile(filename:str, tray_side:str) -> tuple:
 
     x = []
     y = []
     z = []
 
     with open(filename) as f:
+
+        start = False
         for line in f.readlines():
-            if line.find('Focus1') != -1:
+            if re.search(f'Step Name: Plane_AT03_{tray_side}_Module*', line) or re.search(f'Step Name: Plane_{tray_side}*', line):
+                start = True
+                continue
+
+            if line.find('Focus1') != -1 and start:
                 line_list = line.split()
                 x.append(line_list[2])
                 y.append(line_list[3])
                 z.append(line_list[4])
+
+            elif len(x) > 0:
+                break
 
     x = np.array(x, dtype='float64')
     y = np.array(y, dtype='float64')
     z = np.array(z, dtype='float64')
 
     return x, y, z
+
+def ragular_all_numbers(obj, factor=1):
+    if isinstance(obj, dict):
+        return {k: ragular_all_numbers(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [ragular_all_numbers(v) for v in obj]
+    elif isinstance(obj, (int, float)):
+        return round(obj*factor, 4)
+    else:
+        return obj
 
 def write_to_csv(module_qc_dict: dict, outfile, which:str ='all') -> None :
 

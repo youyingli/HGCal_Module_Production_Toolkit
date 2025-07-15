@@ -1,20 +1,10 @@
 from HGCal_Module_Production_Toolkit.utils.center_finder import *
 from HGCal_Module_Production_Toolkit.utils.d_vector_finder import *
-from HGCal_Module_Production_Toolkit.utils.io_tool import get_offsets_raw_from_textfile, write_to_csv
+from HGCal_Module_Production_Toolkit.utils.io_tool import get_offsets_raw_from_textfile, ragular_all_numbers, write_to_csv
 
 import os
 import yaml
 os.environ['FRAMEWORK_PATH'] = './'
-
-def ragular_all_numbers(obj, factor=1):
-    if isinstance(obj, dict):
-        return {k: ragular_all_numbers(v) for k, v in obj.items()}
-    elif isinstance(obj, list):
-        return [ragular_all_numbers(v) for v in obj]
-    elif isinstance(obj, (int, float)):
-        return round(obj*factor, 4)
-    else:
-        return obj
 
 def get_angle_from_two_vectors(v1:dict, v2:dict) -> float:
 

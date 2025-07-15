@@ -5,10 +5,11 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 
+import os
 import numpy as np
 import math
 import re
-from HGCal_Module_Production_Toolkit.utils.io_tool import get_flatness_raw_from_textfile
+from HGCal_Module_Production_Toolkit.utils.io_tool import get_flatness_raw_from_textfile, ragular_all_numbers
 
 # 3D plane, z = ax + by + c 
 def plane(x_y, a, b, c):
@@ -93,20 +94,20 @@ def make_flatness_plot(module, x, y, z, flatness, thickness, critical_points, is
 
 def flatness_calculator(module:str, textfile:str, isVacuum:bool = False) -> dict:
 
-    # Material surface height
-    x_target, y_target, z_target = get_flatness_raw_from_textfile(os.getenv('FRAMEWORK_PATH') + f"/input/{textfile}")
-
     # Tray surface height
     ref_plane_coeffs = None
     tray_side = None
-    if re.search('*AT0[0-9]-[LR]', module):
+    if re.search('AT0[0-9]-[LR]', module):
         module = module.split('-')
+        tray_side = module[2][0]
 
-        x_ref, y_ref, z_ref = get_flatness_raw_from_textfile(os.getenv('FRAMEWORK_PATH') + f'/data/{module[1]}-{module[2]}')
+        x_ref, y_ref, z_ref = get_flatness_raw_from_textfile(os.getenv('FRAMEWORK_PATH') + f'/data/{module[1]}-{module[2]}.txt', tray_side)
         ref_plane_coeffs = ref_plane_finding(x_ref, y_ref, z_ref, np.ones( len(z_ref) ))
 
-        tray_side = module[2][0]
         module = module[0]
+
+    # Material surface height
+    x_target, y_target, z_target = get_flatness_raw_from_textfile(os.getenv('FRAMEWORK_PATH') + f"/input/{textfile}", tray_side)
 
     # Calculate the height in different points on the PCB surface w.r.t the given tray 
     flatness, thickness, z_target, critical_points = target_on_ref_plane(x_target, y_target, z_target, ref_plane_coeffs)
@@ -124,7 +125,7 @@ def flatness_calculator(module:str, textfile:str, isVacuum:bool = False) -> dict
             is180 = True if tray_side == 'L' else False
             )
 
-    return {
+    return ragular_all_numbers( {
             module : {
                 "Vacuum" if isVacuum else "NoVacuum" : {
                         "flatness"   : flatness.item(),
@@ -133,4 +134,4 @@ def flatness_calculator(module:str, textfile:str, isVacuum:bool = False) -> dict
                         "min_height" : critical_points[2]
                     }
                 }
-            }
+            } )
