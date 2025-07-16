@@ -1,7 +1,6 @@
-import os
+import os, sys
 os.environ['FRAMEWORK_PATH'] = './'
-os.environ['PYTHONPATH'] = ''
-print(os.getenv('PYTHONPATH') )
+sys.path.append('./')
 from HGCal_Module_Production_Toolkit.scripts.offsets_calculator import offsets_calculator
 from HGCal_Module_Production_Toolkit.scripts.make_accuracy_plot import make_accuracy_plot
 from HGCal_Module_Production_Toolkit.scripts.flatness_calculator import flatness_calculator
