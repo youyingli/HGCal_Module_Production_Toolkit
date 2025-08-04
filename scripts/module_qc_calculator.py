@@ -40,8 +40,8 @@ def main(offsets_inputs:list, flatness_inputs:list, tag:str = 'NoTag') -> None:
     # ----------------------------------------------------------
     for module, txtfiles in flatness_inputs:
         m = module.split("-")[0]
-        qc_data[m].update( flatness_calculator(module, txtfiles[0], isVacuum=True)[m] )
-        qc_data[m].update( flatness_calculator(module, txtfiles[1])[m] )
+        qc_data[m].update( flatness_calculator(module, txtfiles[0], isVacuum=True, isSkip=(txtfiles[0] == ""))[m] )
+        qc_data[m].update( flatness_calculator(module, txtfiles[1], isSkip=(txtfiles[1] == ""))[m] )
 
     write_to_csv(qc_data, os.getenv('FRAMEWORK_PATH') + f'/out/output_{tag}.csv')
 
@@ -50,6 +50,7 @@ if __name__ == '__main__':
 
     offsets_inputs = [
 
+        (["320MHF1WDNT0148-AT03-R"], "M215.txt"),
         (["320MHF2WCNT0076-AT07-R", "320MHF2WCNT0077-AT07-L"], "M143M144.txt"),
         (["320MHF2WCNT0078-AT08-L", "320MHF2WCNT0079-AT08-R"], "M145M146.txt"),
 
@@ -58,6 +59,7 @@ if __name__ == '__main__':
 
     flatness_inputs = [
 
+        ("320MHF1WDNT0148-AT03-R", ["M215-1.txt", ""]),
         ("320MHF2WCNT0076-AT07-R", ["M143M144-1.txt","M143M144-2.txt"]),
         ("320MHF2WCNT0077-AT07-L", ["M143M144-1.txt","M143M144-2.txt"]),
         ("320MHF2WCNT0078-AT08-L", ["M145M146-1.txt","M145M146-2.txt"]),

@@ -92,7 +92,19 @@ def make_flatness_plot(module, x, y, z, flatness, thickness, critical_points, is
     plt.savefig(os.getenv('FRAMEWORK_PATH') + f'/out/{module}_{tag}_flatness.pdf')
     plt.close()
 
-def flatness_calculator(module:str, textfile:str, isVacuum:bool = False) -> dict:
+def flatness_calculator(module:str, textfile:str, isVacuum:bool = False, isSkip:bool = False) -> dict:
+
+    if isSkip:
+        return {
+                module.split('-')[0] : {
+                    "Vacuum" if isVacuum else "NoVacuum" : {
+                            "flatness"   : "-",
+                            "thickness"  : "-",
+                            "max_height" : "-",
+                            "min_height" : "-"
+                        }
+                    }
+                }
 
     # Tray surface height
     ref_plane_coeffs = None
