@@ -9,7 +9,7 @@ def HF_pcb_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -
 
 def HF_sensor_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :
     return {
-                'x' : list_average(module_offsets_raw[side]['sensor']['x']) + correction['x']*(1 if side == 'R' else -1.),
+                'x' : list_average(module_offsets_raw[side]['sensor']['x']) - correction['x']*(1 if side == 'R' else -1.),
                 'y' : list_average(module_offsets_raw[side]['sensor']['y']) - correction['y']*(1 if side == 'R' else -1.)
             }
 
@@ -21,14 +21,14 @@ def HF_baseplate_center_finder( module_offsets_raw:dict, side:str, correction:di
 
 def HL_pcb_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :
     return {
-                'x' : module_offsets_raw[side]['pcb']['x']['M4'] + correction['x']*(1 if side == 'R' else -1.),
-                'y' : module_offsets_raw[side]['pcb']['y']['M4'] + correction['y']*(1 if side == 'R' else -1.),
+                'x' : module_offsets_raw[side]['pcb']['x']['M4'] - correction['x']*(1 if side == 'R' else -1.),
+                'y' : module_offsets_raw[side]['pcb']['y']['M4'] - correction['y']*(1 if side == 'R' else -1.),
             }
 
 def HL_sensor_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :
     return {
-                'x' : list_average(module_offsets_raw[side]['sensor']['x'].values()) + correction['x']*(1 if side == 'R' else -1.),
-                'y' : list_average(module_offsets_raw[side]['sensor']['y'].values()) + correction['y']*(1 if side == 'R' else -1.)
+                'x' : list_average(module_offsets_raw[side]['sensor']['x'].values()) - correction['x']*(1 if side == 'R' else -1.),
+                'y' : list_average(module_offsets_raw[side]['sensor']['y'].values()) - correction['y']*(1 if side == 'R' else -1.)
             }
 
 def HL_baseplate_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :
@@ -39,14 +39,14 @@ def HL_baseplate_center_finder( module_offsets_raw:dict, side:str, correction:di
 
 def HR_pcb_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :
     return {
-                'x' : module_offsets_raw[side]['pcb']['x']['M4'] + correction['x']*(1 if side == 'R' else -1.),
-                'y' : module_offsets_raw[side]['pcb']['y']['M4'] + correction['y']*(1 if side == 'R' else -1.),
+                'x' : module_offsets_raw[side]['pcb']['x']['M4'] - correction['x']*(1 if side == 'R' else -1.),
+                'y' : module_offsets_raw[side]['pcb']['y']['M4'] - correction['y']*(1 if side == 'R' else -1.),
             }
 
 def HR_sensor_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :
     return {
-                'x' : list_average(module_offsets_raw[side]['sensor']['x'].values()) + correction['x']*(1 if side == 'L' else -1.),
-                'y' : list_average(module_offsets_raw[side]['sensor']['y'].values()) + correction['y']*(1 if side == 'L' else -1.)
+                'x' : list_average(module_offsets_raw[side]['sensor']['x'].values()) - correction['x']*(1 if side == 'R' else -1.),
+                'y' : list_average(module_offsets_raw[side]['sensor']['y'].values()) - correction['y']*(1 if side == 'R' else -1.)
             }
 
 def HR_baseplate_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :

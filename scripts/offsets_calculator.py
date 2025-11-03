@@ -45,8 +45,10 @@ def calculate_centor_offsets(modules:dict, offsets_raw:dict) -> dict:
 
         offsets[module] = {}
         offsets[module]["center_offsets"] = {
-                "pcb"    : [ pcb_centers   ["x"] - baseplate_centers["x"], pcb_centers   ["y"] - baseplate_centers["y"] ],
-                "sensor" : [ sensor_centers["x"] - baseplate_centers["x"], sensor_centers["y"] - baseplate_centers["y"] ],
+                "pcb"    : [ ( pcb_centers   ["x"] - baseplate_centers["x"] )*(1. if tray_side == "R" else -1.),
+                             ( pcb_centers   ["y"] - baseplate_centers["y"] )*(1. if tray_side == "R" else -1.) ],
+                "sensor" : [ ( sensor_centers["x"] - baseplate_centers["x"] )*(1. if tray_side == "R" else -1.),
+                             ( sensor_centers["y"] - baseplate_centers["y"] )*(1. if tray_side == "R" else -1.) ],
                 }
 
     return offsets
