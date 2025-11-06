@@ -53,6 +53,10 @@ def write_to_database(module_qc_dict: dict, config: dict) -> None:
 
     for module_name, module_qc in module_qc_dict.items():
 
+        if module_name.find('320') == -1:
+            print(f'{module_name} is not a real module, so it can not be uploaded to database!')
+            continue
+
         proto_data = {
 
             'proto_name'     : '',

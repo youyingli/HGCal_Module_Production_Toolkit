@@ -49,6 +49,8 @@ def main(offsets_inputs:list, flatness_inputs:list, tag:str = 'NoTag') -> None:
             qc_data[m].update( flatness_calculator(module, txtfiles[1])[m] )
 
     write_to_csv(qc_data, os.getenv('FRAMEWORK_PATH') + f'/out/output_{tag}.csv')
+
+    # Upload to database
     write_to_database(qc_data, config)
 
 if __name__ == '__main__':

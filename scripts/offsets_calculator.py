@@ -39,17 +39,28 @@ def calculate_centor_offsets(modules:dict, offsets_raw:dict) -> dict:
         tray_index  = module_list[1]
         tray_side   = module_list[2]
 
-        pcb_centers       = globals()[f"{module_type}_pcb_center_finder"](offsets_raw, tray_side, pcb_correction[module_type])
-        sensor_centers    = globals()[f"{module_type}_sensor_center_finder"](offsets_raw, tray_side, sensor_correction[module_type])
         baseplate_centers = globals()[f"{module_type}_baseplate_center_finder"](offsets_raw, tray_side, baseplate_correction[tray_index])
 
-        offsets[module] = {}
-        offsets[module]["center_offsets"] = {
-                "pcb"    : [ ( pcb_centers   ["x"] - baseplate_centers["x"] )*(1. if tray_side == "R" else -1.),
-                             ( pcb_centers   ["y"] - baseplate_centers["y"] )*(1. if tray_side == "R" else -1.) ],
-                "sensor" : [ ( sensor_centers["x"] - baseplate_centers["x"] )*(1. if tray_side == "R" else -1.),
-                             ( sensor_centers["y"] - baseplate_centers["y"] )*(1. if tray_side == "R" else -1.) ],
-                }
+        # Identify if the sensor or pcb exists. The program will calculate the center offset for only existing sensor or pcb.
+        offsets[module] = {"center_offsets" : { "pcb":[None, None], "sensor":[None, None] }}
+
+        try:
+            pcb_centers       = globals()[f"{module_type}_pcb_center_finder"](offsets_raw, tray_side, pcb_correction[module_type])
+
+            offsets[module]["center_offsets"]["pcb"] =
+                               [ ( pcb_centers   ["x"] - baseplate_centers["x"] )*(1. if tray_side == "R" else -1.),
+                                 ( pcb_centers   ["y"] - baseplate_centers["y"] )*(1. if tray_side == "R" else -1.) ]
+        except Exception as e:
+            pass
+
+        try:
+            sensor_centers    = globals()[f"{module_type}_sensor_center_finder"](offsets_raw, tray_side, sensor_correction[module_type])
+
+            offsets[module]["center_offsets"]["sensor"] =
+                           [ ( sensor_centers["x"] - baseplate_centers["x"] )*(1. if tray_side == "R" else -1.),
+                             ( sensor_centers["y"] - baseplate_centers["y"] )*(1. if tray_side == "R" else -1.) ]
+        except Exception as e:
+            pass
 
     return offsets
 
@@ -68,18 +79,30 @@ def calculate_angle_offsets(modules:dict, offsets_raw:dict) -> dict:
         tray_index  = module_list[1]
         tray_side   = module_list[2]
 
-        pcb_d_vector       = globals()[f"{module_type}_pcb_d_vector_finder"](offsets_raw, tray_side)
-        sensor_d_vector    = globals()[f"{module_type}_sensor_d_vector_finder"](offsets_raw, tray_side, sensor_correction[module_type])
         baseplate_d_vector = globals()[f"{module_type}_baseplate_d_vector_finder"](offsets_raw, tray_side)
 
-        sensor_angle_offsets = get_angle_from_two_vectors(sensor_d_vector, baseplate_d_vector)
-        pcb_angle_offsets    = get_angle_from_two_vectors(pcb_d_vector, baseplate_d_vector)
+        # Identify if the sensor or pcb exists. The program will calculate the angle offset for only existing sensor or pcb.
+        try:
+            pcb_d_vector       = globals()[f"{module_type}_pcb_d_vector_finder"](offsets_raw, tray_side)
+            pcb_angle_offsets  = get_angle_from_two_vectors(pcb_d_vector, baseplate_d_vector)
 
-        # Assign the angle rotation direction (counterclockwise : "+", clockwise : "-")
-        if pcb_d_vector['d_vector_y'] < baseplate_d_vector['d_vector_y']:
-            pcb_angle_offsets = -pcb_angle_offsets
-        if sensor_d_vector['d_vector_y'] < baseplate_d_vector['d_vector_y']:
-            sensor_angle_offsets = -sensor_angle_offsets
+            # Assign the angle rotation direction (counterclockwise : "+", clockwise : "-")
+            if pcb_d_vector['d_vector_y'] < baseplate_d_vector['d_vector_y']:
+                pcb_angle_offsets = -pcb_angle_offsets
+
+        except Exception as e:
+            pcb_angle_offsets = None
+
+        try:
+            sensor_d_vector    = globals()[f"{module_type}_sensor_d_vector_finder"](offsets_raw, tray_side, sensor_correction[module_type])
+            sensor_angle_offsets = get_angle_from_two_vectors(sensor_d_vector, baseplate_d_vector)
+
+            # Assign the angle rotation direction (counterclockwise : "+", clockwise : "-")
+            if sensor_d_vector['d_vector_y'] < baseplate_d_vector['d_vector_y']:
+                sensor_angle_offsets = -sensor_angle_offsets
+
+        except Exception as e:
+            sensor_angle_offsets = None
 
         offsets[module] = {}
         offsets[module]["angle_offsets"] = {
