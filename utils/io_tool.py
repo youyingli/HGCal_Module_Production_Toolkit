@@ -98,6 +98,16 @@ def get_offsets_raw_from_textfile(filename:str, module_type:str) -> dict:
                             if re.search(f"{side}_{material}_M(0?[1-9]|[1-9][0-9]).{coord}", line):
                                 module_offsets_raw[side.capitalize()][material][coord.lower()][line.split()[1].split('_')[2].split('.')[0]]=float(line.split()[3])
 
+            elif module_type == 'HB':
+
+                word = { 'sensor' : 'M', 'pcb' : 'FD' }
+
+                for side in ["L", "R"]:
+                    for material in ["sensor", "pcb"]:
+                        for coord in ['X', 'Y']:
+                            if re.search(f"{side}_{word[material]}(0?[1-9]|[1-9][0-9]).{coord}", line):
+                                module_offsets_raw[side.capitalize()][material][coord.lower()][line.split()[1].split('_')[1].split('.')[0]]=float(line.split()[3])
+
     return module_offsets_raw
 
 def get_flatness_raw_from_textfile(filename:str, tray_side:str) -> tuple:
@@ -149,6 +159,8 @@ def write_to_csv(module_qc_dict: dict, outfile, which:str ='all') -> None :
             'sensor_center_offset_y',
             'pcb_center_offset_x',
             'pcb_center_offset_y',
+            'pcb_to_sensor_center_offset_x',
+            'pcb_to_sensor_center_offset_y',
             'sensor_angle_offset',
             'pcb_angle_offset',
             "Vacuum_thickness",
@@ -169,12 +181,14 @@ def write_to_csv(module_qc_dict: dict, outfile, which:str ='all') -> None :
             fields[2] : module_qc['center_offsets']['sensor'][1],
             fields[3] : module_qc['center_offsets']['pcb'][0],
             fields[4] : module_qc['center_offsets']['pcb'][1],
-            fields[5] : module_qc['angle_offsets']['sensor'],
-            fields[6] : module_qc['angle_offsets']['pcb'],
-            fields[7] : module_qc['Vacuum']['thickness'],
-            fields[8] : module_qc['Vacuum']['min_height'],
-            fields[9] : module_qc['Vacuum']['max_height'],
-            fields[10] : module_qc['Vacuum']['flatness'],
+            fields[5] : module_qc['center_offsets']['pcb'][0] - module_qc['center_offsets']['sensor'][0],
+            fields[6] : module_qc['center_offsets']['pcb'][1] - module_qc['center_offsets']['sensor'][1],
+            fields[7] : module_qc['angle_offsets']['sensor'],
+            fields[8] : module_qc['angle_offsets']['pcb'],
+            fields[9] : module_qc['Vacuum']['thickness'],
+            fields[10] : module_qc['Vacuum']['min_height'],
+            fields[11] : module_qc['Vacuum']['max_height'],
+            fields[12] : module_qc['Vacuum']['flatness'],
 #            fields[11] : module_qc['NoVacuum']['thickness'],
 #            fields[12] : module_qc['NoVacuum']['min_height'],
 #            fields[13] : module_qc['NoVacuum']['max_height'],

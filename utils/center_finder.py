@@ -1,6 +1,9 @@
 def list_average(coord_list:list) -> float:
     return sum(coord_list) / len(coord_list)
 
+################################
+# HD Full (2.2)
+################################
 def HF_pcb_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :
     return {
                 'x' : list_average(module_offsets_raw[side]['pcb']['x']),
@@ -19,6 +22,9 @@ def HF_baseplate_center_finder( module_offsets_raw:dict, side:str, correction:di
                 'y' : module_offsets_raw['measured_ref']["y"] - (correction['Reference']["y"] - correction[side]["y"])
             }
 
+################################
+# HD Left (1.1)
+################################
 def HL_pcb_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :
     return {
                 'x' : module_offsets_raw[side]['pcb']['x']['M4'] - correction['x']*(1 if side == 'R' else -1.),
@@ -37,6 +43,9 @@ def HL_baseplate_center_finder( module_offsets_raw:dict, side:str, correction:di
                 'y' : module_offsets_raw['measured_ref']["y"] - (correction['Reference']["y"] - correction[side]["y"])
             }
 
+################################
+# HD Right (1.1)
+################################
 def HR_pcb_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :
     return {
                 'x' : module_offsets_raw[side]['pcb']['x']['M4'] - correction['x']*(1 if side == 'R' else -1.),
@@ -50,6 +59,48 @@ def HR_sensor_center_finder( module_offsets_raw:dict, side:str, correction:dict 
             }
 
 def HR_baseplate_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :
+    return {
+                'x' : module_offsets_raw['measured_ref']["x"] - (correction['Reference']["x"] - correction[side]["x"]),
+                'y' : module_offsets_raw['measured_ref']["y"] - (correction['Reference']["y"] - correction[side]["y"])
+            }
+
+################################
+# HD Bottom (1.1)
+################################
+def HB_pcb_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :
+    return {
+                'x' : module_offsets_raw[side]['pcb']['x']['FD4'] - correction['x']*(1 if side == 'R' else -1.),
+                'y' : module_offsets_raw[side]['pcb']['y']['FD4'] - correction['y']*(1 if side == 'R' else -1.),
+            }
+
+def HB_sensor_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :
+
+    # Calculate the center of M14 and M25
+    center_x = ( module_offsets_raw[side]['sensor']['x']['M14'] + module_offsets_raw[side]['sensor']['x']['M25'] )*0.5
+    center_y = ( module_offsets_raw[side]['sensor']['y']['M14'] + module_offsets_raw[side]['sensor']['y']['M25'] )*0.5
+
+    # Unit of the direction vector
+    v_direct_x = module_offsets_raw[side]['sensor']['x']['M14'] - module_offsets_raw[side]['sensor']['x']['M25']
+    v_direct_y = module_offsets_raw[side]['sensor']['y']['M14'] - module_offsets_raw[side]['sensor']['y']['M25']
+    length_direct = ( v_direct_x**2 + v_direct_y**2 ) ** 0.5
+    v_direct_x = v_direct_x / length_direct
+    v_direct_y = v_direct_y / length_direct
+
+    # Unit of the normal vector
+    v_normal_x = v_direct_y
+    v_normal_y = -v_direct_x
+
+    # Make sure the normal vector points up when putting the module on the right and points down when putting the module on the left
+    if (side == 'R' and v_normal_y < 0.) or (side == 'L' and v_normal_y > 0.):
+        v_normal_x = (-1) * v_normal_x
+        v_normal_y = (-1) * v_normal_y
+
+    return {
+                'x' : center_x + v_normal_x*correction['length'],
+                'y' : center_y + v_normal_y*correction['length']
+           }
+
+def HB_baseplate_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :
     return {
                 'x' : module_offsets_raw['measured_ref']["x"] - (correction['Reference']["x"] - correction[side]["x"]),
                 'y' : module_offsets_raw['measured_ref']["y"] - (correction['Reference']["y"] - correction[side]["y"])

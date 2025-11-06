@@ -201,3 +201,71 @@ def HR_baseplate_d_vector_finder( module_offsets_raw:dict, side:str, correction 
                 'd_vector_x' : d_vector_x/length,
                 'd_vector_y' : d_vector_y/length
             }
+
+########################################################
+# HD Bottom
+########################################################
+def HB_pcb_d_vector_finder( module_offsets_raw:dict, side:str, correction = None ) -> dict :
+
+    # HF pcb
+    # direction vector = M1 - M4
+    d_vector_x = module_offsets_raw[side]['pcb']['x']['FD3'] - module_offsets_raw[side]['pcb']['x']['FD1']
+    d_vector_y = module_offsets_raw[side]['pcb']['y']['FD3'] - module_offsets_raw[side]['pcb']['y']['FD1']
+
+    # Always plus for x component
+    if d_vector_x < 0.:
+        d_vector_x = - d_vector_x
+        d_vector_y = - d_vector_y
+
+    length = math.sqrt( d_vector_x**2 + d_vector_y**2 )
+
+    # Return unit vector
+    return {
+                'd_vector_x' : d_vector_x/length,
+                'd_vector_y' : d_vector_y/length
+            }
+
+def HB_sensor_d_vector_finder( module_offsets_raw:dict, side:str, correction = None ) -> dict :
+
+    # HF sensor
+    # direction vector = M26 - M3
+    d_vector_x = module_offsets_raw[side]['sensor']['x']['M14'] - module_offsets_raw[side]['sensor']['x']['M25']
+    d_vector_y = module_offsets_raw[side]['sensor']['y']['M14'] - module_offsets_raw[side]['sensor']['y']['M25']
+
+    # Always plus for x component
+    if d_vector_x < 0.:
+        d_vector_x = - d_vector_x
+        d_vector_y = - d_vector_y
+
+    # Angle rotation as correction
+    theta = correction['theta'] * math.pi / 180.
+    d_vector_x_corr = d_vector_x * math.cos(theta) - d_vector_y * math.sin(theta)
+    d_vector_y_corr = d_vector_y * math.cos(theta) + d_vector_x * math.sin(theta)
+
+    length = math.sqrt( d_vector_x_corr**2 + d_vector_y_corr**2 )
+
+    # Return unit vector
+    return {
+                'd_vector_x' : d_vector_x_corr/length,
+                'd_vector_y' : d_vector_y_corr/length
+            }
+
+def HB_baseplate_d_vector_finder( module_offsets_raw:dict, side:str, correction = None ) -> dict :
+
+    # HF baseplate
+    # direction vector =TTT1 - TTT2
+    d_vector_x = module_offsets_raw['measured_ref']['x'] - module_offsets_raw['measured_sup_ref']['x']
+    d_vector_y = module_offsets_raw['measured_ref']['y'] - module_offsets_raw['measured_sup_ref']['y']
+
+    # Always plus for x component
+    if d_vector_x < 0.:
+        d_vector_x = - d_vector_x
+        d_vector_y = - d_vector_y
+
+    length = math.sqrt( d_vector_x**2 + d_vector_y**2 )
+
+    # Return unit vector
+    return {
+                'd_vector_x' : d_vector_x/length,
+                'd_vector_y' : d_vector_y/length
+            }
