@@ -292,14 +292,24 @@ def make_accuracy_plot(data_list: list, outdir:str = './') -> None:
     plt.close()
 
 
-def main(modules:list) -> None:
+def main() -> None:
 
     with open('configuration.yaml') as config_file:
         config = yaml.safe_load(config_file)
     os.environ['FRAMEWORK_PATH'] = config['framework_path']
 
-    qc_data = []
+    # Input txt file with module names
+    with open (os.environ['FRAMEWORK_PATH'] + "/make_accuracy_summary_ID.txt") as f:
+        module_names = f.readlines()
 
+    modules = []
+    for m in module_names:
+        if m.find('#') != -1:
+            continue
+        modules.append(m[:-1])
+
+    # Connect to database
+    qc_data = []
     with psycopg.connect(
         dbname   = config['database_name'],
         user     = config['user'],
@@ -332,8 +342,6 @@ def main(modules:list) -> None:
                 cursor.execute(query, (module_name,))
                 proto_name = cursor.fetchall()[-1][-1]
 
-                print(proto_name)
-
                 query = f"""
                     SELECT x_offset_mu, y_offset_mu, ang_offset_deg FROM public.proto_inspect
                     WHERE proto_name = %s
@@ -360,38 +368,4 @@ def main(modules:list) -> None:
 
 
 if __name__ == '__main__':
-
-
-    modules = [
-
-#        "320MHF1WCNT0157",
-#        "320MHF1WCNT0158",
-#        "320MHF1WCNT0159",
-#        "320MHF1WCNT0160",
-#        "320MHF1WCNT0161",
-#        "320MHF1WCNT0162",
-#        "320MHF1WCNT0163",
-#        "320MHF1WCNT0164",
-#        "320MHF1WCNT0165",
-#        "320MHF1WCNT0166",
-#        "320MHF1WCNT0167",
-#        "320MHF1WCNT0168"
-
-
-#        "320MHL1WCNT0149",
-#        "320MHL1WCNT0150",
-#        "320MHL1WCNT0151",
-#        "320MHL1WCNT0152",
-        "320MHR1WCNT0153",
-        "320MHR1WCNT0154",
-        "320MHR1WCNT0155",
-        "320MHR1WCNT0156",
-
-
-
-
-
-    ]
-
-
-    main(modules)
+    main()
