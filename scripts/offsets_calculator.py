@@ -42,12 +42,12 @@ def calculate_centor_offsets(modules:dict, offsets_raw:dict) -> dict:
         baseplate_centers = globals()[f"{module_type}_baseplate_center_finder"](offsets_raw, tray_side, baseplate_correction[tray_index])
 
         # Identify if the sensor or pcb exists. The program will calculate the center offset for only existing sensor or pcb.
-        offsets[module] = {"center_offsets" : { "pcb":[None, None], "sensor":[None, None] }}
+        offsets[module] = {"center_offsets" : { "pcb":[0., 0.], "sensor":[0., 0.] }}
 
         try:
             pcb_centers       = globals()[f"{module_type}_pcb_center_finder"](offsets_raw, tray_side, pcb_correction[module_type])
 
-            offsets[module]["center_offsets"]["pcb"] =
+            offsets[module]["center_offsets"]["pcb"] = \
                                [ ( pcb_centers   ["x"] - baseplate_centers["x"] )*(1. if tray_side == "R" else -1.),
                                  ( pcb_centers   ["y"] - baseplate_centers["y"] )*(1. if tray_side == "R" else -1.) ]
         except Exception as e:
@@ -56,7 +56,7 @@ def calculate_centor_offsets(modules:dict, offsets_raw:dict) -> dict:
         try:
             sensor_centers    = globals()[f"{module_type}_sensor_center_finder"](offsets_raw, tray_side, sensor_correction[module_type])
 
-            offsets[module]["center_offsets"]["sensor"] =
+            offsets[module]["center_offsets"]["sensor"] = \
                            [ ( sensor_centers["x"] - baseplate_centers["x"] )*(1. if tray_side == "R" else -1.),
                              ( sensor_centers["y"] - baseplate_centers["y"] )*(1. if tray_side == "R" else -1.) ]
         except Exception as e:
@@ -91,7 +91,7 @@ def calculate_angle_offsets(modules:dict, offsets_raw:dict) -> dict:
                 pcb_angle_offsets = -pcb_angle_offsets
 
         except Exception as e:
-            pcb_angle_offsets = None
+            pcb_angle_offsets = 0.
 
         try:
             sensor_d_vector    = globals()[f"{module_type}_sensor_d_vector_finder"](offsets_raw, tray_side, sensor_correction[module_type])
@@ -102,7 +102,7 @@ def calculate_angle_offsets(modules:dict, offsets_raw:dict) -> dict:
                 sensor_angle_offsets = -sensor_angle_offsets
 
         except Exception as e:
-            sensor_angle_offsets = None
+            sensor_angle_offsets = 0.
 
         offsets[module] = {}
         offsets[module]["angle_offsets"] = {

@@ -34,7 +34,7 @@ def make_accuracy_plot(data_list: list, outdir:str = './') -> None:
         module_name = "Merged"
 
     fig = plt.figure(figsize=(12, 10), constrained_layout=False)
-    gs = fig.add_gridspec(nrows=2, ncols=2, width_ratios=(5, 4), wspace=0.5)
+    gs = fig.add_gridspec(nrows=2, ncols=2, width_ratios=(5, 5), wspace=0.5)
 
 
     #################################
@@ -104,10 +104,10 @@ def make_accuracy_plot(data_list: list, outdir:str = './') -> None:
     ax.scatter(np.array(m_rel_sensor_X_list), np.array(m_rel_sensor_Y_list), marker='.', c='#ff7f0e', linestyle = 'None', label = 'Sensor')
     ax.scatter(np.array(m_rel_pcb_X_list), np.array(m_rel_pcb_Y_list), marker='.', c='#2ca02c', linestyle = 'None', label = 'PCB')
 
-    nxs, _, _ = ax_histx.hist(np.array(m_rel_sensor_X_list), range=(-edge_limit, edge_limit), bins=nbin, color="#ff7f0e")
-    nys, _, _ = ax_histy.hist(np.array(m_rel_sensor_Y_list), range=(-edge_limit, edge_limit), bins=nbin, color="#ff7f0e", orientation='horizontal')
-    nxp, _, _ = ax_histx.hist(np.array(m_rel_pcb_X_list), range=(-edge_limit, edge_limit), bins=nbin, color="#2ca02c")
-    nyp, _, _ = ax_histy.hist(np.array(m_rel_pcb_Y_list), range=(-edge_limit, edge_limit), bins=nbin, color="#2ca02c", orientation='horizontal')
+    nxp, _, _ = ax_histx.hist(np.array(m_rel_pcb_X_list), range=(-edge_limit, edge_limit), bins=nbin, color="#2ca02c", alpha=0.7)
+    nyp, _, _ = ax_histy.hist(np.array(m_rel_pcb_Y_list), range=(-edge_limit, edge_limit), bins=nbin, color="#2ca02c", orientation='horizontal', alpha=0.7)
+    nxs, _, _ = ax_histx.hist(np.array(m_rel_sensor_X_list), range=(-edge_limit, edge_limit), bins=nbin, color="#ff7f0e", alpha=0.7)
+    nys, _, _ = ax_histy.hist(np.array(m_rel_sensor_Y_list), range=(-edge_limit, edge_limit), bins=nbin, color="#ff7f0e", orientation='horizontal', alpha=0.7)
 
     ax_histx.axis("off")
     ax_histy.axis("off")
@@ -242,11 +242,11 @@ def make_accuracy_plot(data_list: list, outdir:str = './') -> None:
     ax_sub.fill_between(-1. * node, 0, 2, color='r', alpha=0.05)
 
     # Polar histogram for angle projection
-    s_polar_bin_content, _, _ = ax_polar_hist.hist(np.array(orig_rel_sensor_angle_list), bins=80,
-            range=(-orig_gauge_angle_max*1.2* np.pi / 180., orig_gauge_angle_max*1.2* np.pi / 180.), color ='#ff7f0e')
-
     p_polar_bin_content, _, _ = ax_polar_hist.hist(np.array(orig_rel_pcb_angle_list), bins=80,
-            range=(-orig_gauge_angle_max*1.2* np.pi / 180., orig_gauge_angle_max*1.2* np.pi / 180.), color ='#2ca02c')
+            range=(-orig_gauge_angle_max*1.2* np.pi / 180., orig_gauge_angle_max*1.2* np.pi / 180.), color ='#2ca02c', alpha=0.7)
+
+    s_polar_bin_content, _, _ = ax_polar_hist.hist(np.array(orig_rel_sensor_angle_list), bins=80,
+            range=(-orig_gauge_angle_max*1.2* np.pi / 180., orig_gauge_angle_max*1.2* np.pi / 180.), color ='#ff7f0e', alpha=0.7)
 
     ax_polar_hist.set_rorigin(-3.5 * np.concatenate((s_polar_bin_content, p_polar_bin_content)).max() )
 
@@ -287,8 +287,8 @@ def make_accuracy_plot(data_list: list, outdir:str = './') -> None:
     plt.tick_params(axis='both', which='major', direction='in', labelsize=14, length=7, width=1.5, right=True, top=True)
 
 
-    plt.savefig(f'Summary_accuracy.png')
-#    plt.savefig(f'Summary_accuracy.pdf')
+    plt.savefig(f'{outdir}/out/Summary_accuracy.png')
+    plt.savefig(f'{outdir}/out/Summary_accuracy.pdf')
     plt.close()
 
 
@@ -297,7 +297,6 @@ def main(modules:list) -> None:
     with open('configuration.yaml') as config_file:
         config = yaml.safe_load(config_file)
     os.environ['FRAMEWORK_PATH'] = config['framework_path']
-
 
     qc_data = []
 
@@ -357,7 +356,7 @@ def main(modules:list) -> None:
                 ])
 
 
-    make_accuracy_plot(qc_data)
+    make_accuracy_plot(qc_data, os.environ['FRAMEWORK_PATH'])
 
 
 if __name__ == '__main__':
@@ -365,18 +364,33 @@ if __name__ == '__main__':
 
     modules = [
 
-        "320MHF2WCNT0113",
-        "320MHF2WCNT0112",
-        "320MHF2WCNT0111",
-        "320MHF2WCNT0110",
-        "320MHF2WCNT0109",
-        "320MHF2WCNT0108",
-        "320MHF2WCNT0107",
-        "320MHF2WCNT0106",
-        "320MHF2WCNT0105",
-        "320MHF2WCNT0104",
-        "320MHF2WCNT0103",
-        "320MHF2WCNT0102"
+#        "320MHF1WCNT0157",
+#        "320MHF1WCNT0158",
+#        "320MHF1WCNT0159",
+#        "320MHF1WCNT0160",
+#        "320MHF1WCNT0161",
+#        "320MHF1WCNT0162",
+#        "320MHF1WCNT0163",
+#        "320MHF1WCNT0164",
+#        "320MHF1WCNT0165",
+#        "320MHF1WCNT0166",
+#        "320MHF1WCNT0167",
+#        "320MHF1WCNT0168"
+
+
+#        "320MHL1WCNT0149",
+#        "320MHL1WCNT0150",
+#        "320MHL1WCNT0151",
+#        "320MHL1WCNT0152",
+        "320MHR1WCNT0153",
+        "320MHR1WCNT0154",
+        "320MHR1WCNT0155",
+        "320MHR1WCNT0156",
+
+
+
+
+
     ]
 
 
