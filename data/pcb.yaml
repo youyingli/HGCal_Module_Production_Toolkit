@@ -1,15 +1,24 @@
 HF:
   x: 0.
   y: 0.
+  theta: 0.
 
 HL:
   x: -30.
   y: 0.
+  theta: 0.
 
 HR:
   x: 30.
   y: 0.
+  theta: 0.
 
 HB:
   x: 0.
   y: 0.
+  theta: 0.
+
+LR:
+  x: 0.5
+  y: 0.
+  theta: 0.

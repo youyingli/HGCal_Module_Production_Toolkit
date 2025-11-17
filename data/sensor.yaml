@@ -19,3 +19,11 @@ HR:
 HB:
   # SPEC the center of M14 and M25
   length: 74.618148
+
+  theta: 0.
+
+LR:
+  x: 24.16799
+  y: 1.744158
+
+  theta: 0.

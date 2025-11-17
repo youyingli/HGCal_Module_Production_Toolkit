@@ -300,13 +300,13 @@ def main() -> None:
 
     # Input txt file with module names
     with open (os.environ['FRAMEWORK_PATH'] + "/make_accuracy_summary_ID.txt") as f:
-        module_names = f.readlines()
+        module_names = f.read().splitlines()
 
     modules = []
     for m in module_names:
         if m.find('#') != -1:
             continue
-        modules.append(m[:-1])
+        modules.append(m)
 
     # Connect to database
     qc_data = []

@@ -98,7 +98,7 @@ def get_offsets_raw_from_textfile(filename:str, module_type:str) -> dict:
                             if re.search(f"{side}_{material}_M(0?[1-9]|[1-9][0-9]).{coord}", line):
                                 module_offsets_raw[side.capitalize()][material][coord.lower()][line.split()[1].split('_')[2].split('.')[0]]=float(line.split()[3])
 
-            elif module_type == 'HB':
+            elif module_type == 'HB' or module_type == 'LR':
 
                 word = { 'sensor' : 'M', 'pcb' : 'FD' }
 
