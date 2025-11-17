@@ -228,9 +228,9 @@ def HB_pcb_d_vector_finder( module_offsets_raw:dict, side:str, correction = None
 def HB_sensor_d_vector_finder( module_offsets_raw:dict, side:str, correction = None ) -> dict :
 
     # HF sensor
-    # direction vector = M26 - M3
-    d_vector_x = module_offsets_raw[side]['sensor']['x']['M14'] - module_offsets_raw[side]['sensor']['x']['M25']
-    d_vector_y = module_offsets_raw[side]['sensor']['y']['M14'] - module_offsets_raw[side]['sensor']['y']['M25']
+    # direction vector = M15 - M24
+    d_vector_x = module_offsets_raw[side]['sensor']['x']['M15'] - module_offsets_raw[side]['sensor']['x']['M24']
+    d_vector_y = module_offsets_raw[side]['sensor']['y']['M15'] - module_offsets_raw[side]['sensor']['y']['M24']
 
     # Always plus for x component
     if d_vector_x < 0.:

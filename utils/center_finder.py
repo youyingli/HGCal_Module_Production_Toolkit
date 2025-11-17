@@ -75,13 +75,13 @@ def HB_pcb_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -
 
 def HB_sensor_center_finder( module_offsets_raw:dict, side:str, correction:dict ) -> dict :
 
-    # Calculate the center of M14 and M25
-    center_x = ( module_offsets_raw[side]['sensor']['x']['M14'] + module_offsets_raw[side]['sensor']['x']['M25'] )*0.5
-    center_y = ( module_offsets_raw[side]['sensor']['y']['M14'] + module_offsets_raw[side]['sensor']['y']['M25'] )*0.5
+    # Calculate the center of M15 and M24
+    center_x = ( module_offsets_raw[side]['sensor']['x']['M15'] + module_offsets_raw[side]['sensor']['x']['M24'] )*0.5
+    center_y = ( module_offsets_raw[side]['sensor']['y']['M15'] + module_offsets_raw[side]['sensor']['y']['M24'] )*0.5
 
     # Unit of the direction vector
-    v_direct_x = module_offsets_raw[side]['sensor']['x']['M14'] - module_offsets_raw[side]['sensor']['x']['M25']
-    v_direct_y = module_offsets_raw[side]['sensor']['y']['M14'] - module_offsets_raw[side]['sensor']['y']['M25']
+    v_direct_x = module_offsets_raw[side]['sensor']['x']['M15'] - module_offsets_raw[side]['sensor']['x']['M24']
+    v_direct_y = module_offsets_raw[side]['sensor']['y']['M15'] - module_offsets_raw[side]['sensor']['y']['M24']
     length_direct = ( v_direct_x**2 + v_direct_y**2 ) ** 0.5
     v_direct_x = v_direct_x / length_direct
     v_direct_y = v_direct_y / length_direct
