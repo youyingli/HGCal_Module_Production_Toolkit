@@ -98,7 +98,23 @@ def get_offsets_raw_from_textfile(filename:str, module_type:str) -> dict:
                             if re.search(f"{side}_{material}_M(0?[1-9]|[1-9][0-9]).{coord}", line):
                                 module_offsets_raw[side.capitalize()][material][coord.lower()][line.split()[1].split('_')[2].split('.')[0]]=float(line.split()[3])
 
-            elif module_type == 'HB' or module_type == 'LR':
+            elif module_type == 'LL' or module_type == 'LT':
+                for side in ["L", "R"]:
+                    for coord in ['X', 'Y']:
+                        if re.search(f"{side}_Sensor_M(0?[1-9]|[1-9][0-9]).{coord}", line):
+                            module_offsets_raw[side.capitalize()]['sensor'][coord.lower()][line.split()[1].split('_')[2].split('.')[0]]=float(line.split()[3])
+                        if re.search(f"{side}_FD(0?[1-9]|[1-9][0-9]).{coord}", line):
+                            module_offsets_raw[side.capitalize()]['pcb'][coord.lower()][line.split()[1].split('_')[1].split('.')[0]]=float(line.split()[3])
+
+            elif module_type == 'LB':
+                for side in ["L", "R"]:
+                    for coord in ['X', 'Y']:
+                        if re.search(f"{side}_sensor_M(0?[1-9]|[1-9][0-9]).{coord}", line):
+                            module_offsets_raw[side.capitalize()]['sensor'][coord.lower()][line.split()[1].split('_')[2].split('.')[0]]=float(line.split()[3])
+                        if re.search(f"{side}_M(0?[1-9]|[1-9][0-9]).{coord}", line):
+                            module_offsets_raw[side.capitalize()]['pcb'][coord.lower()][line.split()[1].split('_')[1].split('.')[0]]=float(line.split()[3])
+
+            elif module_type == 'HB' or module_type == 'LR' or module_type == 'L5':
 
                 word = { 'sensor' : 'M', 'pcb' : 'FD' }
 
