@@ -1,15 +1,14 @@
+import os
 import psycopg
 import yaml
 import matplotlib.pyplot as plt
 import numpy as np
 
-def iv_data_query(cursor, module_name:str, is_lower_temp:bool = False) -> tuple:
-
-    compare_symbol = '<' if is_lower_temp else '>'
+def iv_data_query(cursor, module_name:str, temperature:str = '= 20') -> tuple:
 
     query = f"""
         SELECT program_v, meas_i, temp_c, rel_hum FROM public.module_iv_test
-        WHERE module_name = %s AND (temp_c::REAL) {compare_symbol} 0.
+        WHERE module_name = %s AND (temp_c::REAL) {temperature}
     """
     cursor.execute(query, (module_name,))
     results = cursor.fetchall()
@@ -17,19 +16,23 @@ def iv_data_query(cursor, module_name:str, is_lower_temp:bool = False) -> tuple:
     if len(results) != 0:
         return results[-1]
     else:
-        print(f'IV data for {module_name} does not exist at room temperature !')
+        print(f'IV data for {module_name} does not exist at temperature {temperature} !')
         return None
 
-def makeplot(module_name:str, modules_data_normal_temp:list, modules_data_lower_temp:list, islegend:bool = True) -> tuple:
+def makeplot(module_name:str, modules_data_room_temp:list, modules_data_minus40_temp:list,
+        modules_data_20_temp:list, islegend:bool = True) -> tuple:
 
     fig, ax = plt.subplots(figsize=(8.5, 5), layout='constrained')
     ax.grid()
 
-    for voltage, current, temperature, humidity in modules_data_normal_temp:
-        ax.plot(np.array(voltage), np.array(current)*(1e6), label = f'temperature = {temperature}, humidity = {humidity}', linestyle='-')
+    for voltage, current, temperature, humidity in modules_data_room_temp:
+        ax.plot(np.abs(np.array(voltage)), np.array(current)*(1e6), label = f'temperature = {temperature}, humidity = {humidity}', linestyle='-')
 
-    for voltage, current, temperature, humidity in modules_data_lower_temp:
-        ax.plot(np.array(voltage), np.array(current)*(1e6), label = f'temperature = {temperature}, humidity = {humidity}', linestyle=':')
+    for voltage, current, temperature, humidity in modules_data_minus40_temp:
+        ax.plot(np.abs(np.array(voltage)), np.array(current)*(1e6), label = f'temperature = {temperature}, humidity = {humidity}', linestyle=':')
+
+    for voltage, current, temperature, humidity in modules_data_20_temp:
+        ax.plot(np.abs(np.array(voltage)), np.array(current)*(1e6), label = f'temperature = {temperature}, humidity = {humidity}', linestyle=':')
 
     ax.set_title(f'{module_name} IV', fontdict={'fontsize':20})
     ax.set_xlabel('Voltage [V]',  fontsize=18)
@@ -43,14 +46,15 @@ def makeplot(module_name:str, modules_data_normal_temp:list, modules_data_lower_
         ax.legend(bbox_to_anchor=(1.01, 0., 0.25, .5), loc='lower left', borderaxespad=0.)
     plt.tick_params(axis='both', which='minor', direction='in', labelsize=0, length=5, width=1, right=True)
     plt.tick_params(axis='both', which='major', direction='in', labelsize=18, length=7, width=1.5, right=True)
-    plt.savefig(f'{module_name}_IV.png')
-    plt.savefig(f'{module_name}_IV.pdf')
+    plt.savefig(f'out/{module_name}_IV.png')
+    plt.savefig(f'out/{module_name}_IV.pdf')
     plt.close()
 
 def make_iv_curve(modules: list, config) -> None:
 
-    modules_data_normal_temp = []
-    modules_data_lower_temp  = []
+    modules_data_room_temp    = []
+    modules_data_minus40_temp = []
+    modules_data_20_temp      = []
 
     for module_name in modules:
 
@@ -63,25 +67,80 @@ def make_iv_curve(modules: list, config) -> None:
         ) as connection:
             with connection.cursor() as cursor:
 
-                if data := iv_data_query(cursor, module_name, is_lower_temp=False):
-                    modules_data_normal_temp.append( data )
+                if data := iv_data_query(cursor, module_name, temperature='> 20'):
+                    if data[1][6]<1e-8:
+                        print(module_name)
+                    modules_data_room_temp.append( data )
 
-                if data := iv_data_query(cursor, module_name, is_lower_temp=True):
-                    modules_data_lower_temp.append( data )
+                if data := iv_data_query(cursor, module_name, temperature = '= -40'):
+                    modules_data_minus40_temp.append( data )
 
-        makeplot(module_name, modules_data_normal_temp[-1:], modules_data_lower_temp[-1:])
+                if data := iv_data_query(cursor, module_name, temperature = '= 20'):
+                    modules_data_20_temp.append( data )
 
-    makeplot('summary', modules_data_normal_temp, modules_data_lower_temp, islegend=False)
+        makeplot(module_name, modules_data_room_temp[-1:], modules_data_minus40_temp[-1:], modules_data_20_temp[-1:])
+
+    makeplot('summary', modules_data_room_temp, modules_data_minus40_temp, modules_data_20_temp, islegend=False)
 
 
 if __name__ == '__main__':
 
+
+    with open('configuration.yaml') as config_file:
+        config = yaml.safe_load(config_file)
+    os.environ['FRAMEWORK_PATH'] = config['framework_path']
+
+
     modules = [
-    "320MHF1W4NT0035",
-    "320MHF1W4NT0036",
-    "320MHF1W4NT0037",
-    "320MHF1W4NT0038",
-    "320MHF1W4NT0039",
-    "320MHF1W4NT0040"
+
+
+#        "320MHL1WDNT0169",
+#        "320MHL1WDNT0170",
+#        "320MHL1WDNT0171",
+#        "320MHL1WDNT0172",
+#        "320MHR1WDNT0173",
+#        "320MHR1WDNT0174",
+#        "320MHR1WDNT0175",
+#        "320MHR1WDNT0176",
+
+        "320MHL1WCNT0149",
+        "320MHL1WCNT0150",
+        "320MHL1WCNT0151",
+        "320MHL1WCNT0152",
+        "320MHR1WCNT0153",
+        "320MHR1WCNT0154",
+        "320MHR1WCNT0155",
+        "320MHR1WCNT0156",
+        "320MHF1WCNT0157",
+        "320MHF1WCNT0158",
+        "320MHF1WCNT0159",
+        "320MHF1WCNT0160",
+        "320MHF1WCNT0161",
+        "320MHF1WCNT0162",
+        "320MHF1WCNT0163",
+        "320MHF1WCNT0164",
+        "320MHF1WCNT0165",
+        "320MHF1WCNT0166",
+        "320MHF1WCNT0167",
+        "320MHF1WCNT0168",
+        "320MHL1WDNT0169",
+        "320MHL1WDNT0170",
+        "320MHL1WDNT0171",
+        "320MHL1WDNT0172",
+        "320MHR1WDNT0173",
+        "320MHR1WDNT0174",
+        "320MHR1WDNT0175",
+        "320MHR1WDNT0176",
+        "320MHB1WDNT0177",
+        "320MHB1WDNT0178",
+        "320MHB1WDNT0179",
+        "320MHB1WDNT0180",
+
+
+
+
+
+
     ]
+
     make_iv_curve(modules, config)
