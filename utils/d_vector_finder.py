@@ -425,21 +425,17 @@ def L5_pcb_d_vector_finder( module_offsets_raw:dict, side:str, correction = None
     d_vector_x = module_offsets_raw[side]['pcb']['x']['FD2'] - module_offsets_raw[side]['pcb']['x']['FD4']
     d_vector_y = module_offsets_raw[side]['pcb']['y']['FD2'] - module_offsets_raw[side]['pcb']['y']['FD4']
 
-    # Normal vector
-    n_vector_x = d_vector_y
-    n_vector_y = -d_vector_x
-
     # Always plus for x component
-    if n_vector_x < 0.:
-        n_vector_x = - n_vector_x
-        n_vector_y = - n_vector_y
+    if d_vector_x < 0.:
+        d_vector_x = - d_vector_x
+        d_vector_y = - d_vector_y
 
-    length = math.sqrt( n_vector_x**2 + n_vector_y**2 )
+    length = math.sqrt( d_vector_x**2 + d_vector_y**2 )
 
     # Return unit vector
     return {
-                'd_vector_x' : n_vector_x/length,
-                'd_vector_y' : n_vector_y/length
+                'd_vector_x' : d_vector_x/length,
+                'd_vector_y' : d_vector_y/length
             }
 
 def L5_sensor_d_vector_finder( module_offsets_raw:dict, side:str, correction = None ) -> dict :
