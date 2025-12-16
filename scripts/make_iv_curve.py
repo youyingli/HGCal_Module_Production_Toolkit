@@ -9,6 +9,7 @@ def iv_data_query(cursor, module_name:str, temperature:str = '= 20') -> tuple:
     query = f"""
         SELECT program_v, meas_i, temp_c, rel_hum FROM public.module_iv_test
         WHERE module_name = %s AND (temp_c::REAL) {temperature}
+        ORDER BY mod_ivtest_no ASC
     """
     cursor.execute(query, (module_name,))
     results = cursor.fetchall()
@@ -68,8 +69,6 @@ def make_iv_curve(modules: list, config) -> None:
             with connection.cursor() as cursor:
 
                 if data := iv_data_query(cursor, module_name, temperature='> 20'):
-                    if data[1][6]<1e-8:
-                        print(module_name)
                     modules_data_room_temp.append( data )
 
                 if data := iv_data_query(cursor, module_name, temperature = '= -40'):
@@ -103,26 +102,6 @@ if __name__ == '__main__':
 #        "320MHR1WDNT0175",
 #        "320MHR1WDNT0176",
 
-        "320MHL1WCNT0149",
-        "320MHL1WCNT0150",
-        "320MHL1WCNT0151",
-        "320MHL1WCNT0152",
-        "320MHR1WCNT0153",
-        "320MHR1WCNT0154",
-        "320MHR1WCNT0155",
-        "320MHR1WCNT0156",
-        "320MHF1WCNT0157",
-        "320MHF1WCNT0158",
-        "320MHF1WCNT0159",
-        "320MHF1WCNT0160",
-        "320MHF1WCNT0161",
-        "320MHF1WCNT0162",
-        "320MHF1WCNT0163",
-        "320MHF1WCNT0164",
-        "320MHF1WCNT0165",
-        "320MHF1WCNT0166",
-        "320MHF1WCNT0167",
-        "320MHF1WCNT0168",
         "320MHL1WDNT0169",
         "320MHL1WDNT0170",
         "320MHL1WDNT0171",
@@ -135,8 +114,10 @@ if __name__ == '__main__':
         "320MHB1WDNT0178",
         "320MHB1WDNT0179",
         "320MHB1WDNT0180",
-
-
+        "320MLL3WCNT0181",
+        "320MLL3WCNT0182",
+        "320MLR3WCNT0183",
+        "320MLR3WCNT0184",
 
 
 

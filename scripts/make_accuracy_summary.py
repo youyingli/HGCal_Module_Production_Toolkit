@@ -324,6 +324,7 @@ def main() -> None:
                 query = f"""
                     SELECT flatness, avg_thickness, x_offset_mu, y_offset_mu, ang_offset_deg FROM public.module_inspect
                     WHERE module_name = %s
+                    ORDER BY module_row_no ASC
                 """
                 cursor.execute(query, (module_name,))
                 results = cursor.fetchall()
@@ -338,6 +339,7 @@ def main() -> None:
                 query = f"""
                     SELECT proto_name FROM public.module_assembly
                     WHERE module_name = %s
+                    ORDER BY module_ass ASC
                 """
                 cursor.execute(query, (module_name,))
                 proto_name = cursor.fetchall()[-1][-1]
@@ -345,6 +347,7 @@ def main() -> None:
                 query = f"""
                     SELECT x_offset_mu, y_offset_mu, ang_offset_deg FROM public.proto_inspect
                     WHERE proto_name = %s
+                    ORDER BY proto_row_no ASC
                 """
                 cursor.execute(query, (proto_name,))
                 results_proto = cursor.fetchall()[-1]

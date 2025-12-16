@@ -36,15 +36,35 @@ def count_insertion_iteration(cursor, module_state:str, which:str) -> int:
 
     return result[0]
 
-def grade_module(info:dict) -> str:
+# https://indico.cern.ch/event/1554499/contributions/6545989/attachments/3080366/5452243/ModuleProdNumbers_June04_2025.pdf
+def proto_grading(info:dict) -> str:
 
     x_offset = abs(info['x_offset_mu'])
     y_offset = abs(info['y_offset_mu'])
     angle    = info['ang_offset_deg']
 
-    if x_offset <= 50 and y_offset <= 50 and angle <= 0.02:
+    if x_offset < 50. and y_offset < 50. and angle < 0.04:
         return "A"
-    elif x_offset <= 100 and y_offset <= 100 and angle <= 0.04:
+    elif x_offset < 100. and y_offset < 100. and angle < 0.04:
+        return "B"
+    else:
+        return "C"
+
+# https://indico.cern.ch/event/1554499/contributions/6545989/attachments/3080366/5452243/ModuleProdNumbers_June04_2025.pdf
+def module_grading(info:dict, isCEH:bool) -> str:
+
+    x_offset = abs(info['x_offset_mu'])
+    y_offset = abs(info['y_offset_mu'])
+    angle    = info['ang_offset_deg']
+
+    bgrade_1 = 110. if isCEH else 120.
+    bgrade_2 = 75.  if isCEH else 85.
+
+    if x_offset < 75. and y_offset < 75. and angle < 0.04:
+        return "A"
+    elif x_offset < bgrade_1 and y_offset < bgrade_1 and angle < 0.04:
+        return "B"
+    elif x_offset < bgrade_2 and y_offset < bgrade_2 and angle < 0.1:
         return "B"
     else:
         return "C"
@@ -112,6 +132,7 @@ def write_to_database(module_qc_dict: dict, config: dict) -> None:
                 query = f"""
                     SELECT proto_name, ass_run_date FROM public.module_assembly
                     WHERE module_name = %s
+                    ORDER BY module_ass ASC
                 """
                 cursor.execute(query, (module_name,))
                 results = cursor.fetchall()
@@ -123,10 +144,10 @@ def write_to_database(module_qc_dict: dict, config: dict) -> None:
 
                 proto_data['proto_name']    = proto_name
                 proto_data['date_inspect']  = timestemp
-                proto_data['grade']         = grade_module(proto_data)
+                proto_data['grade']         = proto_grading(proto_data)
                 proto_data['iteration']     = count_insertion_iteration(cursor, "proto", proto_name)
                 module_data['date_inspect'] = timestemp
-                module_data['grade']        = grade_module(module_data)
+                module_data['grade']        = module_grading(module_data, module_name[7] == 'T')
                 module_data['iteration']    = count_insertion_iteration(cursor, "module", module_name)
 
                 # Proto module data insertion
